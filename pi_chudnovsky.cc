@@ -5,32 +5,21 @@ struct chudnovsky_series_term
 {
    typedef T result_type;
 
-   chudnovsky_series_term():
-      k(0)
-   {
-   }
-
    T operator()()
    {
       BOOST_MATH_STD_USING // Aid ADL for pow
       using boost::math::factorial;
 
-      std::cout << "iteration no " << k << std::endl;
+      static size_t k = 0;
+
       const T num = factorial<T>(6 * k) * (a1 + (a2 * k));
       const T denom = (factorial<T>(3 * k) * pow(factorial<T>(k), 3)) * pow(b1, (3 * k));
-
       const T result = num / denom;
-      std::cout << "result " << result << std::endl;
 
-      if (k++ & 1)
-         return -result;
-      else
-         return result;
+      return (k++ & 1) ? -result : result;
    }
 
 private:
-   size_t k;
-
    static const T a1, a2, b1;
 };
 
@@ -51,7 +40,7 @@ inline T chudnovsky_pi(const Policy& pol)
    boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
 
    const T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
-   return (426880 * sqrt(T(10005))) / result;
+   return (426880u * sqrt(T(10005u))) / result;
 }
 
 int main()
