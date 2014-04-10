@@ -31,24 +31,27 @@ template<class T>
 const T chudnovsky_series_term<T>::b1 = 640320u;
 
 
-template <class T, class Policy>
-inline T chudnovsky_pi(const Policy& pol)
+template <class T>
+inline T chudnovsky_pi()
 {
    BOOST_MATH_STD_USING
+   using boost::math::policies::get_max_series_iterations;
+   using boost::math::policies::get_epsilon;
+   using boost::math::policies::policy;
 
    chudnovsky_series_term<T> s;
-   boost::uintmax_t max_iter = boost::math::policies::get_max_series_iterations<Policy>();
+   boost::uintmax_t max_iter = get_max_series_iterations<policy<> >();
 
-   const T result = boost::math::tools::sum_series(s, boost::math::policies::get_epsilon<T, Policy>(), max_iter);
+   const T result = boost::math::tools::sum_series(s, get_epsilon<T, policy<> >(), max_iter);
    return (426880u * sqrt(T(10005u))) / result;
 }
 
 int main()
 {
-	using namespace boost::multiprecision;
-	using float_type = number<backends::gmp_float<3000u>, et_on>;
-
-	const float_type pi = chudnovsky_pi<float_type>(boost::math::policies::policy<>());
-	std::cout << std::setprecision(std::numeric_limits<float_type>::digits10) << pi.str() << std::endl;
-	return 0;
+   using namespace boost::multiprecision;
+   using float_type = number<backends::gmp_float<3000u>, et_on>;
+   
+   const float_type pi = chudnovsky_pi<float_type>();
+   std::cout << pi.str() << std::endl;
+   return 0;
 }
